@@ -34,9 +34,9 @@ store 0 to kpl_fr,nkklr,nkkl_fr,kgp_fr,kpv_fr
  // Первый прайс(для корр шапки)
 
 store 0 to kopir,tcenir,ndsir,ptcenir,pndsir,xtcenir,xndsir,cntrs2r,kpsbbr,prvzznr,;
-           ttnprzr,ttnkplr,ttnktor,ttnppsfr,motchpr,ttnsdvr,ttn1ccr,;
+           ttnprzr,ttnkplr,ttnktor,ttnppsfr,motchpr,ttnSdvr,ttn1ccr,;
            ttnkpkr,ttnktar,ttntmr,atrcr,symkl,vzz,bsr,rndsr,cntttnr,ddokr,;
-           sdvp3r,corsh,ktar,kecsr,ndsr,pndsr,pcor,ktasr,tmestor,pr361r,;
+           Sdvp3r,corsh,ktar,kecsr,ndsr,pndsr,pcor,ktasr,tmestor,pr361r,;
            ttnkpkpr,sdfr,ttndzr,kgprmr,kolposr,vsvr,vsvbr,ttnbsor,napr,docidr,ttnakcr
 store 0 to mk174r,mnktr,ttnktr,skktr,dtktr,nndsktr,prAkcr,ttn177r,pr177r,ttnpr177r,;
            prdecr,katranr,ttn169r,pr169r,ttnpr169r,mk169r,ttn129r,pr129r,ttnpr129r,mk129r,;
@@ -108,15 +108,15 @@ Do While .T.
    if corsh=0
 
       store 0 to ttnr,ndr,mnr,qr,prZn,przr,kopr,kgpr,kplr,ttnkpsr,kpsr,kklr,sdfr,;
-                 zcr,sdvr,prnnr,sklr,przp,pprr,numbr,sktr,tcenr,ptcenr,xtcenr,pdrr,kklmr,;
-                 mskltr,sktr,skltr,bprzr,bsdvr,pzenr,boptr,roptr,nKklr,nofr,ttnpr,ttncr,;
+                 zcr,Sdvr,prnnr,sklr,przp,pprr,numbr,sktr,tcenr,ptcenr,xtcenr,pdrr,kklmr,;
+                 mskltr,sktr,skltr,bprzr,bSdvr,pzenr,boptr,roptr,nKklr,nofr,ttnpr,ttncr,;
                  prModr,tskltr,entpr,kopir,tcenir,ndsir,ptcenir,pndsir,xtcenir,xndsir,;
                  prvzznr,prAkcr,pr177r,ttn177r,prdecr,katranr,PrnOprnr
       store 0 to pr169r,ttn169r,mk169r,;
                  pr129r,ttn129r,mk129r,;
                  pr139r,ttn139r,mk139r
       store 0 to sksr,sklsr,ktar,ktasr,kecsr,amnr,pStr,ptr,kpvr,bsor,bsonr,;
-                 pr49r,doguslr,sktpr,skltpr,skspr,sklspr,amnpr,entpr,skidr,;
+                 pr49r,doguslr,sktpr,skltpr,skspr,sklspr,amnpr,entpr,SkIdr,;
                  MZenr,ppsfr,ktospr,ktovttnr,nndsr,mrshr,pvtr,krspor,krspbr,;
                  krspnbr,krspr,krspsr,otnr,kgnr,ktofpr,prvxr,tmestor,pr361r,;
                  Exter,kolposr,ktovzttnr,napr,docidr,kpsbbr,mk174r,mnktr,;
@@ -417,7 +417,7 @@ Do While .T.
          kpsr=kps
          ttnkpsr=kps
          npvr=npv
-         sdvr=sdv
+         Sdvr=Sdv
          nnzr = NNZ           //номер договора
          dnzr = DNZ           //дата договора
          ttn1cr=ttn1c
@@ -1343,7 +1343,7 @@ Do While .T.
    @ 3,52 say str(sdfr,5,0)
    @ 3,62 say 'Вес: ' + str(vsvr,11,3)+'кг'
    @ 3,62 say 'Вес:' + str(vsvr,5,0)+'('+str(vsvbr,5,0)+')'+'кг'
-   @ 5,43 say ' Итого                : ' + str(sdvr,10,2)
+   @ 5,43 say ' Итого                : ' + str(Sdvr,10,2)
    if corsh=1
       corsh=0
    endif
@@ -1424,9 +1424,9 @@ Do While .T.
    do while esc_r=0
       prZen2r=0
       prNacr=0
-      skidr=getfield('t1','kplr','kln','skid')
-      sdvdopr=0
-      sdvuchr=0
+      SkIdr=getfield('t1','kplr','kln','SkId')
+      Sdvdopr=0
+      SdvUchr=0
       if gnCtov=1
          if gnAdm=1.or.gnRrs2m=1
             rs2vidr=2
@@ -1482,25 +1482,25 @@ Do While .T.
          endif
          rcrs2r=recn()
          go rcrs2r
-         sdvotp_r=getfield('t1','ttnr,90','rs3','ssf')
+         SdvOtp_r=getfield('t1','ttnr,90','rs3','ssf')
          sele rs3
-         sdvp3_r=getfield('t1','ttnr,90','rs3','xssf')
+         Sdvp3_r=getfield('t1','ttnr,90','rs3','xssf')
          sele rs2
-         sdvuchr=getfield('t1','ttnr,96','rs3','ssf')+;
+         SdvUchr=getfield('t1','ttnr,96','rs3','ssf')+;
                  iif(pStr=1,getfield('t1','ttnr,94','rs3','ssf'),0)+;
                  iif(tarar=0,getfield('t1','ttnr,97','rs3','ssf'),0)
          sele rs3
-         sdvp3_r=getfield('t1','ttnr,90','rs3','xssf')
+         Sdvp3_r=getfield('t1','ttnr,90','rs3','xssf')
          sele rs2
          do case
             case rs2vidr=1
                  nrs2r='По отпускным ценам'
-                 if sdvdopr#0
-                    @ 4,43 say '                        '+str(sdvdopr,10,2)
+                 if Sdvdopr#0
+                    @ 4,43 say '                        '+str(Sdvdopr,10,2)
                  else
-                    @ 4,43 say ' По закупочным ценам  : '+str(sdvuchr,10,2) color 'g/n,n/g'
+                    @ 4,43 say ' По закупочным ценам  : '+str(SdvUchr,10,2) color 'g/n,n/g'
                  endif
-                 @ 5,43 say ' По отпускным ценам   : ' + str(sdvotp_r,10,2)+' '+str(prdecr,1) color 'g/n,n/g'
+                 @ 5,43 say ' По отпускным ценам   : ' + str(SdvOtp_r,10,2)+' '+str(prdecr,1) color 'g/n,n/g'
                  @ 6,43 say ' Количество позиций   : ' + str(cnttm2r,3)
                  do case
                     case pr49r=0
@@ -1516,8 +1516,8 @@ Do While .T.
             case rs2vidr=2.or.gnCtov#1
                  sele rs1
                  nrs2r='По партиям'+' ('+str(rs1->nkkl,7)+')'
-                 @ 4,43 say ' По закупочным ценам  : ' + str(sdvuchr,10,2) color 'g/n,n/g'
-                 @ 5,43 say ' По отпускным ценам   : ' + str(sdvotp_r,10,2)+' '+str(prdecr,1) color 'g/n,n/g'
+                 @ 4,43 say ' По закупочным ценам  : ' + str(SdvUchr,10,2) color 'g/n,n/g'
+                 @ 5,43 say ' По отпускным ценам   : ' + str(SdvOtp_r,10,2)+' '+str(prdecr,1) color 'g/n,n/g'
                  @ 6,43 say ' Количество позиций   : ' + str(cntt2r,3) color 'g/n'
                  do case
                     case pr49r=0
@@ -1836,7 +1836,7 @@ Do While .T.
              case lastkey()=K_F4; // Сетевая печать/Фин подтв
               .and.(who#0) ; //.or.(who=0.and. pr169r=2));
               .and.gnArm=3
-               If kopr=169 .and. !(sdvr < 50000 ) //sdv50000
+               If kopr=169 .and. !(Sdvr < 50000 ) //Sdv50000
                   wmess('Ограничение по сумме д-та 50000',2)
                   loop
                EndIf
@@ -1931,7 +1931,7 @@ Do While .T.
                   endif
                   prModr=1
              case lastkey()=K_ALT_F4.and.who#0.and.gnArm=3 // Сетевая печать/Фин подтв
-               If kopr=169 .and. !(sdvr < 50000 ) //sdv50000
+               If kopr=169 .and. !(Sdvr < 50000 ) //Sdv50000
                   wmess('Ограничение по сумме д-та 50000',2)
                   loop
                EndIf
@@ -1984,7 +1984,7 @@ Do While .T.
                   endif
                   prModr=1
              case lastkey()=K_F5.and.who#0 // Локальная печать
-               If kopr=169 .and. !(sdvr < 50000 ) //sdv50000
+               If kopr=169 .and. !(Sdvr < 50000 ) //Sdv50000
                   wmess('Ограничение по сумме д-та 50000',2)
                   loop
                EndIf
@@ -2102,7 +2102,7 @@ Do While .T.
                   endif
                   prModr=1
              case lastkey()=K_ALT_F5.and.who#0 // Локальная печать
-               If kopr=169 .and. !(sdvr < 50000 ) //sdv50000
+               If kopr=169 .and. !(Sdvr < 50000 ) //Sdv50000
                   wmess('Ограничение по сумме д-та 50000',2)
                   loop
                EndIf

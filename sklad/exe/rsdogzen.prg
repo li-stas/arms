@@ -10,7 +10,7 @@
 #include "common.ch"
 #include "inkey.ch"
 // RsDogZen()
-// gprZenr,gprBZenr,gprXZenr   - max % на группу
+// gPrZenr,gPrBZenr,gPrXZenr   - max % на группу
 // iprZenr,iprBZenr,iprXZenr   - max % на изготовителя
 // tprZenr,tprBZenr,tprXZenr   -     % на товар
 // SmSBZenr           - сумма скидки по 2-й цене
@@ -24,6 +24,7 @@ if (przr=0)
     If gnAdm=1
       aPcen={'Прайс2', 'Документ2', 'Прайс3', 'Документ3', "На сумму Ц1"}
     EndIf
+    aPcen={'Прайс2', 'Документ2', 'Прайс3', 'Документ3', "На сумму Ц1"}
     aPcenr=alert('Пересчитать цены?', aPcen)
     if (lastkey()=K_ESC)
       return
@@ -105,10 +106,8 @@ while (.t.)
   do while ttn=ttnr
     ktlr=ktl
     kgrr=int(ktlr/1000000)
-    if kgrr<=1
-      skip
-      loop
-    endif
+
+
     prZenr=pZen
     prZenPr=prZenP
     SmZenr=roun(kvp*Zen,2)
@@ -168,8 +167,10 @@ while (.t.)
       SmXZenPr=roun(kvp*XZenP*(1+gnNds/100),2)
     endif
 
+    // минимальна наценка ЛОДИСа
     prUZenr=10
     prUZenPr=10
+
     SmUZenr=roun(kvp*XZen * ((prUZenr+100)/100), 2)
     if (ndsr=2.or.ndsr=3.or.ndsr=5)
       SmUZenPr=roun(kvp*XZenP*((prUZenr+100)/100),2)
@@ -236,181 +237,190 @@ while (.t.)
 
   // сумма скидки если Опр+10 и ценуПрайсаСкидки
   sele psgr
-  sum SmSUZen to nSmSUZen for !(str(int(kg/1000000),3) $ '340;350')
+  //sum SmSUZen to nSmSUZen for !(str(kg,3) $ '340;355')
+  nS_SdvOpt = getfield('t1','ttnr,90','rs3','ssf')
 
   sele psgr
   go top
   sele psgr
-  foot('F4,ENTER', 'Коррекция,Изготовитель'+" "+allt(str(nSmSUZen,10,2)))
-  do case
-  case (pBZenr=0)         //.and.pXZenr=0
-    rckgrr=slcf('psgr', 8,,,, "e:kg h:'КОД' c:n(3) e:ng h:'Наименов. группы' c:с(20) e:pZen h:'% цены' c:n(6,2) e:prZenP h:'% дог.ц' c:n(6,2)",,, 1,,,, 'НА ГРУППУ')
-  case (pBZenr=1)         //.and.pXZenr=0
-    rckgrr=slcf('psgr', 8,,,, "e:kg h:'КОД' c:n(3) e:ng h:'Наименов. группы' c:с(20) e:pZen h:'% 1 цены' c:n(6,2) e:prZenP h:'% 1 дог.ц' c:n(6,2) e:pBZen h:'% 2 цены' c:n(6,2) e:prBZenP h:'% 2 дог.ц' c:n(6,2)",,, 1,,,, 'НА ГРУППУ')
-  endcase
+  foot('F4,ENTER', 'Коррекция,Изготовитель';
+  ;//+" "+allt(str(nSmSUZen,10,2));
+  +" "+allt(str(sdvotp_r,10,2));
+  +" "+allt(str(nS_SdvOpt,10,2));
+  +" "+allt(str(SdvOtp_r - nS_SdvOpt,10,2));
+  )
 
-  if (lastkey()=K_ESC)
-    exit
-  endif
+  If aPcenr=5
+    Do While .t.
 
-  sele psgr
-  go rckgrr
-  kgrr=kg
-  gprZenr=pZen
-  gprZenPr=prZenP
-  gSmZenr=SmZen
-  gSmZenPr=SmZenP
-  gSmSZenr=SmSZen           // Сумма1 скидки суммой
-  gprBZenr=pBZen
-  gprBZenPr=prBZenP
-  gSmBZenr=SmBZen
-  gSmBZenPr=SmBZenP
-  gSmSBZenr=SmSBZen         // Сумма2 скидки суммой
-  do case
-  case (lastkey()=K_F4.and.przr=0)
+      Repl_ZenRs2(aPcenr, prUZenr) // заливает 10%
+      Pere(2)
+      nS_SdvOpt = getfield('t1','ttnr,90','rs3','ssf')
 
-    clttnr=setcolor('gr+/b,n/bg')
-    wttnr=wopen(10, 14, 15, 60)
-    wbox(1)
-    @ 0, 1 say '%  изменения 1-й цены  ' get gprZenr pict '999.99'//VALID GETACTIVE():varGet()>=gprZenPr
-    @ 0, col()+1 say str(gSmSZenr, 10, 2)
-    if (pBZenr=1)
-      if (gnCenr=0)
-        @ 1, 1 say '%  изменения 2-й цены  ' get gprBZenr pict '999.99'//VALID GETACTIVE():varGet()>=gprBZenPr
-      else
-        @ 1, 1 say '%  изменения 2-й цены  ' get gprBZenr pict '999.99'// VALID GETACTIVE():varGet()>=gprBZenPr
-      endif
-
-      @ 1, col()+1 say str(gSmSBZenr, 10, 2)
-    endif
-
-    read
-    if (pBZenr=1.and.gprBZenr=0)
-      @ 1, 32 get gSmSBZenr pict '9999999.99' VALID prBZen(1)
-      read
-    endif
-
-    wclose(wttnr)
-    setcolor(clttnr)
-    if (lastkey()=K_ESC.or.!prdp())
-      loop
-    endif
-
-    Repl_ZenRs2()
-
-  case (lastkey()=K_ENTER)
-    while (.t.)
-      sele pizg
-      zap
-      sele rs2
-      netseek('t1', 'ttnr')
-      while (ttn=ttnr)
-        if (int(ktl/1000000)=kgrr)
-          izgr=izg
-          nizgr=getfield('t1', 'izgr', 'kln', 'nkl')
-          prZenr=pZen
-          prZenPr=prZenP
-          SmZenr=round(kvp*Zen, 2)
-          if (ndsr=2.or.ndsr=3.or.ndsr=5)
-            SmZenPr=round(kvp*ZenP, 2)
-          else
-            SmZenPr=round(kvp*ZenP*(1+gnNds/100), 2)
-          endif
-
-          prBZenr=pBZen
-          prBZenPr=prBZenP
-          SmBZenr=round(kvp*BZen, 2)
-          if (ndsr=2.or.ndsr=3.or.ndsr=5)
-            SmBZenPr=round(kvp*BZenP, 2)
-          else
-            SmBZenPr=round(kvp*BZenP*(1+gnNds/100), 2)
-          endif
-
-          sele pizg
-          seek str(izgr, 7)
-          if (!FOUND())
-            appe blank
-            repl izg with izgr, nizg with nizgr,                                                                                  ;
-             pZen with prZenr, prZenP with prZenPr, SmZen with SmZenr, SmZenP with SmZenPr, SmSZen with SmZenr-SmZenPr,           ;
-             pBZen with prBZenr, prBZenP with prBZenPr, SmBZen with SmBZenr, SmBZenP with SmBZenPr, SmSBZen with SmBZenr-SmBZenPr
-          else
-            if (abs(prZenr)>abs(pZen))
-              repl pZen with prZenr
-            endif
-
-            if (abs(prBZenr)>abs(pBZen))
-              repl pBZen with prBZenr
-            endif
-
-            repl SmZen with SmZen+SmZenr, SmZenP with SmZenP+SmZenPr, SmSZen with SmSZen+SmZenr-SmZenPr,      ;
-             SmBZen with SmBZen+SmBZenr, SmBZenP with SmBZenP+SmBZenPr, SmSBZen with SmSBZen+SmBZenr-SmBZenPr
-          endif
-
-        endif
-
-        sele rs2
-        skip
-      enddo
-
-      foot('F4', 'Коррекция')
-      sele pizg
-      go top
-      do case
-      case (pBZenr=0)     //.and.pXZenr=0
-        rcizgr=slcf('pizg', 10,, 8,, "e:izg h:'КОД' c:n(7) e:nizg h:'Наименов. изгот.' c:с(20) e:pZen h:'% цены' c:n(6,2) e:prZenP h:'% дог.ц' c:n(6,2)",,,,,,,, 'НА ИЗГОТОВИТЕЛЯ')
-      case (pBZenr=1)     //.and.pXZenr=0
-        rcizgr=slcf('pizg', 10,, 8,, "e:izg h:'КОД' c:n(7) e:nizg h:'Наименов. изгот.' c:с(20) e:pZen h:'% 1 цены' c:n(6,2) e:prZenP h:'% 1 дог.ц' c:n(6,2) e:pBZen h:'% 2 цены' c:n(6,2) e:prBZenP h:'% 2 дог.ц' c:n(6,2)",,,,,,, 'НА ИЗГОТОВИТЕЛЯ')
-      endcase
-
+      prUZenr := Read_SumUts(prUZenr, sdvotp_r, nS_SdvOpt)
       if (lastkey()=K_ESC)
         exit
       endif
+    EndDo
+    if (lastkey()=K_ESC)
+      exit
+    endif
 
-      sele pizg
-      go rcizgr
-      izgr=izg
-      iprZenr=pZen
-      iprZenPr=prZenP
-      iSmZenr=SmZen
-      iSmZenPr=SmZenP
-      iSmSZenr=SmSZen       // Сумма1 скидки суммой
-      iprBZenr=pBZen
-      iprBZenPr=prBZenP
-      iSmBZenr=SmBZen
-      iSmBZenPr=SmBZenP
-      iSmSBZenr=SmSBZen     // Сумма2 скидки суммой
-      do case
-      case (lastkey()=K_F4.and.przr=0)
-        clttnr=setcolor('gr+/b,n/bg')
-        wttnr=wopen(10, 14, 15, 60)
-        wbox(1)
-        @ 0, 1 say '%  изменения 1-й цены  ' get iprZenr pict '999.99' VALID GETACTIVE():varGet()>=iprZenPr
-        @ 0, col()+1 say str(iSmSZenr, 10, 2)
-        if (pBZenr=1)
-          @ 1, 1 say '%  изменения 2-й цены  ' get iprBZenr pict '999.99' VALID GETACTIVE():varGet()>=iprBZenPr
-          @ 1, col()+1 say str(iSmSBZenr, 10, 2)
+  Else
+    do case
+
+    case (pBZenr=0)         //.and.pXZenr=0
+      rckgrr=slcf('psgr', 8,,,, "e:kg h:'КОД' c:n(3) e:ng h:'Наименов. группы' c:с(20) e:pZen h:'% цены' c:n(6,2) e:prZenP h:'% дог.ц' c:n(6,2)",,, 1,,,, 'НА ГРУППУ')
+    case (pBZenr=1)         //.and.pXZenr=0
+      rckgrr=slcf('psgr', 8,,,, "e:kg h:'КОД' c:n(3) e:ng h:'Наименов. группы' c:с(20) e:pZen h:'% 1 цены' c:n(6,2) e:prZenP h:'% 1 дог.ц' c:n(6,2) e:pBZen h:'% 2 цены' c:n(6,2) e:prBZenP h:'% 2 дог.ц' c:n(6,2)",,, 1,,,, 'НА ГРУППУ')
+    endcase
+
+    if (lastkey()=K_ESC)
+      exit
+    endif
+
+    sele psgr
+    go rckgrr
+    kgrr=kg
+    gPrZenr=pZen
+    gPrZenPr=prZenP
+    gSmZenr=SmZen
+    gSmZenPr=SmZenP
+    gSmSZenr=SmSZen           // Сумма1 скидки суммой
+    gPrBZenr=pBZen
+    gPrBZenPr=prBZenP
+    gSmBZenr=SmBZen
+    gSmBZenPr=SmBZenP
+    gSmSBZenr=SmSBZen         // Сумма2 скидки суммой
+    do case
+
+    case (lastkey()=K_F4.and.przr=0)
+
+      // изменение процента и ведет к изменении цены
+      Read_gPrZen()
+
+      if (lastkey()=K_ESC.or.!prdp())
+        loop
+      endif
+
+           //sdvotp_r=getfield('t1','ttnr,90','rs3','ssf')
+      Repl_ZenRs2(aPcenr, prUZenr)
+
+      Pere(2)
+
+    case (lastkey()=K_ENTER)
+      while (.t.)
+        sele pizg
+        zap
+        sele rs2
+        netseek('t1', 'ttnr')
+        while (ttn=ttnr)
+          if (int(ktl/1000000)=kgrr)
+            izgr=izg
+            nizgr=getfield('t1', 'izgr', 'kln', 'nkl')
+            prZenr=pZen
+            prZenPr=prZenP
+            SmZenr=round(kvp*Zen, 2)
+            if (ndsr=2.or.ndsr=3.or.ndsr=5)
+              SmZenPr=round(kvp*ZenP, 2)
+            else
+              SmZenPr=round(kvp*ZenP*(1+gnNds/100), 2)
+            endif
+
+            prBZenr=pBZen
+            prBZenPr=prBZenP
+            SmBZenr=round(kvp*BZen, 2)
+            if (ndsr=2.or.ndsr=3.or.ndsr=5)
+              SmBZenPr=round(kvp*BZenP, 2)
+            else
+              SmBZenPr=round(kvp*BZenP*(1+gnNds/100), 2)
+            endif
+
+            sele pizg
+            seek str(izgr, 7)
+            if (!FOUND())
+              appe blank
+              repl izg with izgr, nizg with nizgr,                                                                                  ;
+               pZen with prZenr, prZenP with prZenPr, SmZen with SmZenr, SmZenP with SmZenPr, SmSZen with SmZenr-SmZenPr,           ;
+               pBZen with prBZenr, prBZenP with prBZenPr, SmBZen with SmBZenr, SmBZenP with SmBZenPr, SmSBZen with SmBZenr-SmBZenPr
+            else
+              if (abs(prZenr)>abs(pZen))
+                repl pZen with prZenr
+              endif
+
+              if (abs(prBZenr)>abs(pBZen))
+                repl pBZen with prBZenr
+              endif
+
+              repl SmZen with SmZen+SmZenr, SmZenP with SmZenP+SmZenPr, SmSZen with SmSZen+SmZenr-SmZenPr,      ;
+               SmBZen with SmBZen+SmBZenr, SmBZenP with SmBZenP+SmBZenPr, SmSBZen with SmSBZen+SmBZenr-SmBZenPr
+            endif
+
+          endif
+
+          sele rs2
+          skip
+        enddo
+
+        foot('F4', 'Коррекция')
+        sele pizg
+        go top
+        do case
+        case (pBZenr=0)     //.and.pXZenr=0
+          rcizgr=slcf('pizg', 10,, 8,, "e:izg h:'КОД' c:n(7) e:nizg h:'Наименов. изгот.' c:с(20) e:pZen h:'% цены' c:n(6,2) e:prZenP h:'% дог.ц' c:n(6,2)",,,,,,,, 'НА ИЗГОТОВИТЕЛЯ')
+        case (pBZenr=1)     //.and.pXZenr=0
+          rcizgr=slcf('pizg', 10,, 8,, "e:izg h:'КОД' c:n(7) e:nizg h:'Наименов. изгот.' c:с(20) e:pZen h:'% 1 цены' c:n(6,2) e:prZenP h:'% 1 дог.ц' c:n(6,2) e:pBZen h:'% 2 цены' c:n(6,2) e:prBZenP h:'% 2 дог.ц' c:n(6,2)",,,,,,, 'НА ИЗГОТОВИТЕЛЯ')
+        endcase
+
+        if (lastkey()=K_ESC)
+          exit
         endif
 
-        read
-        if (pBZenr=1.and.iprBZenr=0)
-          @ 1, 32 get iSmSBZenr pict '9999999.99' VALID prBZen(2)
+        sele pizg
+        go rcizgr
+        izgr=izg
+        iprZenr=pZen
+        iprZenPr=prZenP
+        iSmZenr=SmZen
+        iSmZenPr=SmZenP
+        iSmSZenr=SmSZen       // Сумма1 скидки суммой
+        iprBZenr=pBZen
+        iprBZenPr=prBZenP
+        iSmBZenr=SmBZen
+        iSmBZenPr=SmBZenP
+        iSmSBZenr=SmSBZen     // Сумма2 скидки суммой
+        do case
+        case (lastkey()=K_F4.and.przr=0)
+          clttnr=setcolor('gr+/b,n/bg')
+          wttnr=wopen(10, 14, 15, 60)
+          wbox(1)
+          @ 0, 1 say '%  изменения 1-й цены  ' get iprZenr pict '999.99' VALID GETACTIVE():varGet()>=iprZenPr
+          @ 0, col()+1 say str(iSmSZenr, 10, 2)
+          if (pBZenr=1)
+            @ 1, 1 say '%  изменения 2-й цены  ' get iprBZenr pict '999.99' VALID GETACTIVE():varGet()>=iprBZenPr
+            @ 1, col()+1 say str(iSmSBZenr, 10, 2)
+          endif
+
           read
-        endif
+          if (pBZenr=1.and.iprBZenr=0)
+            @ 1, 32 get iSmSBZenr pict '9999999.99' VALID prBZen(2)
+            read
+          endif
 
-        wclose(wttnr)
-        setcolor(clttnr)
-        if (lastkey()=K_ESC.or.!prdp())
-          loop
-        endif
+          wclose(wttnr)
+          setcolor(clttnr)
+          if (lastkey()=K_ESC.or.!prdp())
+            loop
+          endif
 
-        Repl_ZenIzgRs2()
+          Repl_ZenIzgRs2()
 
-      endcase
+        endcase
 
-    enddo
+      enddo
 
-  endcase
-
+    endcase
+  EndIf
 enddo
 
 if (select('psgr')#0)
@@ -440,14 +450,14 @@ set order to tag t3
 function prBZen(p1)
   if (p1=1)               // На группу
     sele psgr
-    ngprBZenr=((gSmSBZenr+gSmBZenPr)/gSmBZenPr-1)*100
-    if (ngprBZenr<gprBZenPr)
+    ngPrBZenr=((gSmSBZenr+gSmBZenPr)/gSmBZenPr-1)*100
+    if (ngPrBZenr<gPrBZenPr)
       wmess('Низзя!!!', 1)
       return (.f.)
     endif
 
-    gprBZenr=ngprBZenr
-    netrepl('pBZen', 'gprBZenr')
+    gPrBZenr=ngPrBZenr
+    netrepl('pBZen', 'gPrBZenr')
   else                      // На изготовителя
     sele pizg
     niprBZenr=((iSmSBZenr+iSmBZenPr)/iSmBZenPr-1)*100
@@ -467,8 +477,8 @@ function prXZen(p1)
   /***************** */
   if (p1=1)               // На группу
     sele psgr
-    gprXZenr=((gSmSXZenr+gSmXZenPr)/gSmXZenPr-1)*100
-    netrepl('pXZen', 'gprXZenr')
+    gPrXZenr=((gSmSXZenr+gSmXZenPr)/gSmXZenPr-1)*100
+    netrepl('pXZen', 'gPrXZenr')
   else                      // На изготовителя
     sele pizg
     iprXZenr=((iSmSXZenr+iSmXZenPr)/iSmXZenPr-1)*100
@@ -2078,31 +2088,67 @@ function ZenAk(p1, p2)
  ВОЗВР. ЗНАЧЕНИЕ....
  ПРИМЕЧАНИЯ.........
  */
-STATIC FUNCTION Repl_ZenRs2()
+STATIC FUNCTION Repl_ZenRs2(aPcenr, nPercent)
   sele rs2
   if (netseek('t1', 'ttnr'))
     while (ttn=ttnr)
       ktlr=ktl
       mntovr=mntov
-      if (int(ktlr/1000000)#kgrr)
-        skip
-        loop
+
+      If aPcenr=5
+
+        if (str(int(ktlr/1000000),3) $ '340;355')
+          skip
+          loop
+        endif
+
+        if int(ktlr/1000000)<=1 // тара
+          skip
+          loop
+        endif
+
+        if "АКЦ" $ upper(getfield('t1','sklr,ktlr','tov','nat'))
+          skip
+          loop
+        endif
+
+      Else
+        if (int(ktlr/1000000)#kgrr)
+          skip
+          loop
+        endif
+      EndIf
+
+      If aPcenr=5
+        Zenr=roun(XZen * ((nPercent+100)/100), 2)
+        ZenPr=ZenP
+        BZenr=BZen
+        BZenPr=BZenP
+        XZenr=XZen
+        XZenPr=XZenP
+        prZenr=PrZenr
+        prZenPr=prZenP
+        prBZenr=PrBZenr
+        prBZenPr=prBZenP
+      else
+        Zenr=Zen
+        ZenPr=ZenP
+        BZenr=BZen
+        BZenPr=BZenP
+        XZenr=XZen
+        XZenPr=XZenP
+        prZenr=gPrZenr
+        prZenPr=prZenP
+        prBZenr=gPrBZenr
+        prBZenPr=prBZenP
+
+        sele tov
+        if (netseek('t1', 'sklr,ktlr'))
+          Zen(1)
+        endif
+
       endif
 
-      Zenr=Zen
-      ZenPr=ZenP
-      BZenr=BZen
-      BZenPr=BZenP
-      XZenr=XZen
-      XZenPr=XZenP
-      prZenr=gprZenr
-      prZenPr=prZenP
-      prBZenr=gprBZenr
-      prBZenPr=prBZenP
-      sele tov
-      if (netseek('t1', 'sklr,ktlr'))
-        Zen(1)
-      endif
 
       sele rs2
       kvpr=kvp
@@ -2221,3 +2267,74 @@ STATIC FUNCTION Create_pSGr()
   index on str(izg, 7) tag t1
 
   RETURN ( NIL )
+
+
+/*****************************************************************
+ 
+ FUNCTION:
+ АВТОР..ДАТА..........С. Литовка  11-30-20 * 11:22:49am
+ НАЗНАЧЕНИЕ.........
+ ПАРАМЕТРЫ..........
+ ВОЗВР. ЗНАЧЕНИЕ....
+ ПРИМЕЧАНИЯ.........
+ */
+STATIC FUNCTION Read_gPrZen()
+  clttnr=setcolor('gr+/b,n/bg')
+  wttnr=wopen(10, 14, 15, 60)
+  wbox(1)
+  @ 0, 1 say '%  изменения 1-й цены  ' get gPrZenr pict '999.99'//VALID GETACTIVE():varGet()>=gPrZenPr
+  @ 0, col()+1 say str(gSmSZenr, 10, 2)
+  if (pBZenr=1)
+    if (gnCenr=0)
+      @ 1, 1 say '%  изменения 2-й цены  ' get gPrBZenr pict '999.99'//VALID GETACTIVE():varGet()>=gPrBZenPr
+    else
+      @ 1, 1 say '%  изменения 2-й цены  ' get gPrBZenr pict '999.99'// VALID GETACTIVE():varGet()>=gPrBZenPr
+    endif
+
+    @ 1, col()+1 say str(gSmSBZenr, 10, 2)
+  endif
+  read
+
+  if (pBZenr=1.and.gPrBZenr=0)
+    @ 1, 32 get gSmSBZenr pict '9999999.99' VALID prBZen(1)
+    read
+  endif
+
+  wclose(wttnr)
+  setcolor(clttnr)
+  RETURN ( NIL )
+
+
+/*****************************************************************
+ 
+ FUNCTION:
+ АВТОР..ДАТА..........С. Литовка  11-30-20 * 05:19:26pm
+ НАЗНАЧЕНИЕ.........
+ ПАРАМЕТРЫ..........
+ ВОЗВР. ЗНАЧЕНИЕ....
+ ПРИМЕЧАНИЯ.........
+ */
+STATIC FUNCTION Read_SumUts(prUZenr, sdvotp_r, nS_SdvOpt)
+  local nSumUtsMax, nSumUts
+  local scdt_r:=setcolor('gr+/b,n/w')
+  local wdt_r:=wopen(8, 10, 13, 60)
+  wbox(1)
+
+  nSumUtsMax = SdvOtp_r - nS_SdvOpt
+  nSumUts = nSumUtsMax
+
+  @ 0, 1 say "Суммы: Док"+"="+allt(str(sdvotp_r,10,2));
+             +" Зак.+%"+"="+allt(str(nS_SdvOpt,10,2));
+             +" Макс скидка"+"="+allt(str(nSumUts,10,2))
+
+  //@ 1, 1 say 'Сумма скидки  ' get nSumUts picture '@K 99999.99' ;
+  //  valid nSumUts >= 0 .and. nSumUts < nSumUtsMax
+
+  @ 1, 1 say '% скидки  ' get prUZenr picture '@K 99999.99' ;
+    valid prUZenr >= 0 .and. prUZenr < nSumUtsMax
+
+  read
+  wclose(wdt_r)
+  setcolor(scdt_r)
+
+  RETURN (prUZenr )
