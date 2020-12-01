@@ -20,17 +20,19 @@
 aPcenr=0
 if (przr=0)
   if (gnAdm=1.or.gnCenr=1)
-    aPcen={'Прайс2', 'Документ2', 'Прайс3', 'Документ3'}
-    If gnAdm=1
-      aPcen={'Прайс2', 'Документ2', 'Прайс3', 'Документ3', "На сумму Ц1"}
+    aPcen={'Прайс2', 'Док.Ц2', 'Прайс3', 'Док.Ц3', "% на учет.Ц"}
+    //aPcen={'Прайс2', 'Документ2', 'Прайс3', 'Документ3'}
+    If .t. // gnAdm=1
+      aadd(aPcen,"Сумма уценки")
     EndIf
-    aPcen={'Прайс2', 'Документ2', 'Прайс3', 'Документ3', "На сумму Ц1"}
+
     aPcenr=alert('Пересчитать цены?', aPcen)
+
     if (lastkey()=K_ESC)
       return
     endif
 
-    if (aPcenr=1.or.aPcenr=2.or.aPcenr=5)
+    if (aPcenr=1.or.aPcenr=2.or.aPcenr=5.or.aPcenr=6)
       prDecr=2
     else
       prDecr=0
@@ -80,7 +82,7 @@ if (prdp())
   endif
 
   if (aPcenr#0)
-    if (aPcenr=1.or.aPcenr=3.or.aPcenr=5)
+    if (aPcenr=1.or.aPcenr=3.or.aPcenr=5.or.aPcenr=6)
       // p1=1 текущие прайсовые цены ,договорные скидки
       // p1=2 прайсовые цены по документу,скидки по документу
       rs2pZen(1)
@@ -250,14 +252,35 @@ while (.t.)
   +" "+allt(str(SdvOtp_r - nS_SdvOpt,10,2));
   )
 
-  If aPcenr=5
+  If aPcenr=6
+
+    Repl_ZenRs2(5, prUZenr) // заливает 10%
+    Pere(2)
+    nS_SdvOpt = getfield('t1','ttnr,90','rs3','ssf')
+
+    nMaxSumUts := sdvotp_r - nS_SdvOpt
+    nSumUts := Read_SumUts(sdvotp_r, nS_SdvOpt) //  какую хотим
+
+    if (lastkey()=K_ESC)
+      exit
+    endif
+    If round(nMaxSumUts - nSumUts,2) = 0
+      exit
+    EndIf
+
+    if CalcPercent(nSumUts, @nMaxSumUts, sdvotp_r, nS_SdvOpt) # 0
+      wmess('Цель не остигнyта. Разница = '+str(nMaxSumUts,5,2), 0)
+    endif
+    exit
+
+  elseIf aPcenr=5
     Do While .t.
 
       Repl_ZenRs2(aPcenr, prUZenr) // заливает 10%
       Pere(2)
       nS_SdvOpt = getfield('t1','ttnr,90','rs3','ssf')
 
-      prUZenr := Read_SumUts(prUZenr, sdvotp_r, nS_SdvOpt)
+      prUZenr := Read_prUZen(prUZenr, sdvotp_r, nS_SdvOpt)
       if (lastkey()=K_ESC)
         exit
       endif
@@ -2314,7 +2337,7 @@ STATIC FUNCTION Read_gPrZen()
  ВОЗВР. ЗНАЧЕНИЕ....
  ПРИМЕЧАНИЯ.........
  */
-STATIC FUNCTION Read_SumUts(prUZenr, sdvotp_r, nS_SdvOpt)
+STATIC FUNCTION Read_prUZen(prUZenr, sdvotp_r, nS_SdvOpt)
   local nSumUtsMax, nSumUts
   local scdt_r:=setcolor('gr+/b,n/w')
   local wdt_r:=wopen(8, 10, 13, 60)
@@ -2338,3 +2361,88 @@ STATIC FUNCTION Read_SumUts(prUZenr, sdvotp_r, nS_SdvOpt)
   setcolor(scdt_r)
 
   RETURN (prUZenr )
+
+/*****************************************************************
+ 
+ FUNCTION:
+ АВТОР..ДАТА..........С. Литовка  12-01-20 * 01:58:20pm
+ НАЗНАЧЕНИЕ.........
+ ПАРАМЕТРЫ..........
+ ВОЗВР. ЗНАЧЕНИЕ....
+ ПРИМЕЧАНИЯ.........
+ */
+STATIC FUNCTION Read_SumUts(sdvotp_r, nS_SdvOpt)
+  local nSumUtsMax, nSumUts
+  local scdt_r:=setcolor('gr+/b,n/w')
+  local wdt_r:=wopen(8, 10, 13, 60)
+  wbox(1)
+
+  nSumUtsMax = SdvOtp_r - nS_SdvOpt
+  nSumUts = nSumUtsMax
+
+  @ 0, 1 say "Суммы: Док" + "=" + allt(str(sdvotp_r, 10, 2));
+             + " Зак.+%"+"=" + allt(str(nS_SdvOpt, 10, 2));
+             + " Макс скидка" + "=" + allt(str(nSumUtsMax, 10, 2))
+
+  @ 1, 1 say 'Сумма скидки  ' get nSumUts picture '@K 99999.99' ;
+    valid nSumUts >= 0 .and. nSumUts < nSumUtsMax
+
+
+  read
+  wclose(wdt_r)
+  setcolor(scdt_r)
+
+  RETURN (nSumUts)
+
+/*****************************************************************
+ 
+ FUNCTION:
+ АВТОР..ДАТА..........С. Литовка  12-01-20 * 04:23:27pm
+ НАЗНАЧЕНИЕ.........
+ ПАРАМЕТРЫ..........
+ ВОЗВР. ЗНАЧЕНИЕ....
+ ПРИМЕЧАНИЯ.........
+ */
+STATIC FUNCTION CalcPercent(nSumUts, nMaxSumUts, sdvotp_r, nCur_SdvOpt)
+  LOCAL nMinPr := 10
+  LOCAL nMaxPr := 30
+  LOCAL nCurPr := round((nMinPr + nMaxPr)/2,2)
+  LOCAL nDelta := round(nMaxSumUts - nSumUts,2)
+  LOCAL nCurSumUts := nMaxSumUts
+  LOCAL ii := 1500
+
+  Do While ii > 0
+    ii--
+
+    outlog(__FILE__,__LINE__, str(nDelta,8,2), str(nCurSumUts,8,2), str(sdvotp_r,8,2), str(nS_SdvOpt,8,2) )
+    outlog(__FILE__,__LINE__, str(nCurPr,8,2), str(nMinPr,8,2), str(nMaxPr,8,2))
+
+    Repl_ZenRs2(5, nCurPr) // заливает 10%
+    Pere(2)
+    nCur_SdvOpt = getfield('t1','ttnr,90','rs3','ssf')
+
+    nCurSumUts := sdvotp_r - nCur_SdvOpt
+    nDelta := round(nCurSumUts - nSumUts,2)
+
+    Do Case
+    Case abs(round((nMinPr - nMaxPr)/2,2)) = 0.01
+      exit
+    Case nDelta > 0
+      nMinPr := nCurPr
+      nMaxPr := nMaxPr
+
+      nCurPr := round((nMinPr + nMaxPr)/2,2)
+    Case nDelta < 0
+      nMinPr := nMinPr
+      nMaxPr := nCurPr
+
+      nCurPr := round((nMinPr + nMaxPr)/2,2)
+    Case nDelta = 0
+      exit
+    EndCase
+
+  EndDo
+
+  nMaxSumUts := nDelta
+
+  RETURN (nDelta)
