@@ -1545,7 +1545,7 @@ PROCEDURE PrnDoc()
      if kkr=1.and.prUpr=1.and.vzz=1
        if kopr=129.or.kopr=139
           ??chr(27)+'E'+chr(27)+'&l4h25a0O'+chr(27)+'&k2S'+chr(27)+'(3R'+chr(27)+'(s0p15.00h1s1b4102T'+chr(27)
-          ?' ОБМЕНЯТЬ ТОВАР '+str(kopr,3)+" "+nopr
+          ?' ОБМЕНЯТЬ ТОВАР '+str(kopr,3)+" "+allt(NOpr)
        else
           ??chr(27)+'E'+chr(27)+'&l4h25a0O'+chr(27)+'&k2S'+chr(27)+'(3R'+chr(27)+'(s0p18.00h1s1b4102T'+chr(27)
        endif
@@ -1553,7 +1553,7 @@ PROCEDURE PrnDoc()
         ??setprnr
         if kkr>1.and.prUpr=1.and.vzz=1
            if kopr=129.or.kopr=139
-              ?' ОБМЕНЯТЬ ТОВАР '+str(kopr,3)+" "+nopr
+              ?' ОБМЕНЯТЬ ТОВАР '+str(kopr,3)+" "+allt(NOpr)
            endif
         endif
      endif
@@ -2194,7 +2194,9 @@ PROCEDURE PrnDoc()
       If kolposNoPrn <> 0
         sele PRs2
         copy to PRs21
-        If file('PRs21.cdx'); erase PRs21.cdx;  EndIf
+        If file('PRs21.cdx')
+          erase PRs21.cdx
+        EndIf
         lindx('PRs21','rs2')
         use PRs21 excl new
         dele for NoPrn=1
@@ -3397,10 +3399,10 @@ func RsSh(p1)
           sele klndog
           if fieldpos('cndog')=0
              if gcPath_m='i:\pl\'
-                ?'Код опеpацiї - '+str(kopr,3)+' '+nopr + Say_Dogvir(0,0,kopr)
+                ?'Код опеpацiї - '+str(kopr,3)+' '+allt(nopr) + Say_Dogvir(0,0,kopr)
              else
                 if !(kopr=177.and.(vzz=1.or.vzz=3))
-                   ?'Код опеpацiї - '+str(kopr,3)+' '+nopr+ Say_Dogvir(ttnpr,ttncr,kopr)
+                   ?'Код опеpацiї - '+str(kopr,3)+' '+allt(NOpr)+ Say_Dogvir(ttnpr,ttncr,kopr)
                    //' Договiр '+str(getfield('t1','kplr','klndog','ndog'),6);
                    //+' от '+dtoc(getfield('t1','kplr','klndog','dtdogb'));
                    //+iif(ttnpr#0,' '+str(ttnpr,6),'')+iif(ttncr#0,' '+str(ttncr,6),'')
@@ -3411,12 +3413,12 @@ func RsSh(p1)
           else
              if empty(getfield('t1','kplr','klndog','cndog'))
                 if gcPath_m='i:\pl\'
-                   ?'Код опеpацiї - '+str(kopr,3)+' '+nopr+ Say_Dogvir(0,0,kopr)
+                   ?'Код опеpацiї - '+str(kopr,3)+' '+allt(NOpr)+ Say_Dogvir(0,0,kopr)
                    //' Договiр '+str(getfield('t1','kplr','klndog','ndog'),6);
                    //+' от '+dtoc(getfield('t1','kplr','klndog','dtdogb'))
                 else
                    if !(kopr=177.and.(vzz=1.or.vzz=3))
-                     ?'Код опеpацiї - '+str(kopr,3)+' '+nopr+ Say_Dogvir(ttnpr,ttncr,kopr)
+                     ?'Код опеpацiї - '+str(kopr,3)+' '+allt(NOpr)+ Say_Dogvir(ttnpr,ttncr,kopr)
                      //' Договiр '+str(getfield('t1','kplr','klndog','ndog'),6);
                      //+' от '+dtoc(getfield('t1','kplr','klndog','dtdogb'));
                      //+iif(ttnpr#0,' '+str(ttnpr,6),'')+iif(ttncr#0,' '+str(ttncr,6),'')
@@ -3427,22 +3429,22 @@ func RsSh(p1)
              else
                 if gnEnt=20.and.kplr=3229492.and.prmk17r=1.and.!(kopr=177.and.(vzz=1.or.vzz=3))
                    if gcPath_m='i:\pl\'
-                      ?'Код опеpацiї - '+str(kopr,3)+' '+nopr+' Договiр '+'383/КО/11-ПН'+' вiд '+dtoc(getfield('t1','kplr','klndog','dtdogb'))
+                      ?'Код опеpацiї - '+str(kopr,3)+' '+allt(NOpr)+' Договiр '+'383/КО/11-ПН'+' вiд '+dtoc(getfield('t1','kplr','klndog','dtdogb'))
                    else
                       if !(kopr=177.and.(vzz=1.or.vzz=3))
-                         ?'Код опеpацiї - '+str(kopr,3)+' '+nopr+' Договiр '+'383/КО/11-ПН'+' вiд '+dtoc(getfield('t1','kplr','klndog','dtdogb'))+iif(ttnpr#0,' '+str(ttnpr,6),'')+iif(ttncr#0,' '+str(ttncr,6),'')
+                         ?'Код опеpацiї - '+str(kopr,3)+' '+allt(NOpr)+' Договiр '+'383/КО/11-ПН'+' вiд '+dtoc(getfield('t1','kplr','klndog','dtdogb'))+iif(ttnpr#0,' '+str(ttnpr,6),'')+iif(ttncr#0,' '+str(ttncr,6),'')
                       else
                          ?'Код опеpацiї - '+str(kopr,3)
                       endif
                    endif
                 else
                   if gcPath_m='i:\pl\'
-                    ?'Код опеpацiї - '+str(kopr,3)+' '+nopr+ Say_Dogvir(0,0,kopr)
+                    ?'Код опеpацiї - '+str(kopr,3)+' '+allt(NOpr)+ Say_Dogvir(0,0,kopr)
                     //' Договiр '+alltrim(getfield('t1','kplr','klndog','cndog'));
                     //+' от '+dtoc(getfield('t1','kplr','klndog','dtdogb'))
                   else
                     if !(kopr=177.and.(vzz=1.or.vzz=3))
-                      ?'Код опеpацiї - '+str(kopr,3)+' '+nopr+ Say_Dogvir(ttnpr,ttncr,kopr)
+                      ?'Код опеpацiї - '+str(kopr,3)+' '+allt(NOpr)+ Say_Dogvir(ttnpr,ttncr,kopr)
                       //' Договiр '+alltrim(getfield('t1','kplr','klndog','cndog'));
                       //+' от '+dtoc(getfield('t1','kplr','klndog','dtdogb'));
                       //+iif(ttnpr#0,' '+str(ttnpr,6),'')+iif(ttncr#0,' '+str(ttncr,6),'')
@@ -3456,10 +3458,10 @@ func RsSh(p1)
         else
           if fieldpos('cndog')=0
              if gcPath_m='i:\pl\'
-                ?'Код опеpацiї - '+str(kopr,3)+' '+nopr
+                ?'Код опеpацiї - '+str(kopr,3)+' '+allt(NOpr)
              else
                 if !(kopr=177.and.(vzz=1.or.vzz=3))
-                   ?'Код опеpацiї - '+str(kopr,3)+' '+nopr+' ';
+                   ?'Код опеpацiї - '+str(kopr,3)+' '+allt(NOpr)+' ';
                    +iif(ttnpr#0,' '+str(ttnpr,6),'')+iif(ttncr#0,' '+str(ttncr,6),'')
                 else
                    ?'Код опеpацiї - '+str(kopr,3)
@@ -3468,17 +3470,17 @@ func RsSh(p1)
           else
              if empty(getfield('t1','kplr','klndog','cndog'))
                 if gcPath_m='i:\pl\'
-                   ?'Код опеpацiї - '+str(kopr,3)+' '+nopr
+                   ?'Код опеpацiї - '+str(kopr,3)+' '+allt(NOpr)
                 else
-                   ?'Код опеpацiї - '+str(kopr,3)+' '+nopr+' ';
+                   ?'Код опеpацiї - '+str(kopr,3)+' '+allt(NOpr)+' ';
                    +iif(ttnpr#0,' '+str(ttnpr,6),'')+iif(ttncr#0,' '+str(ttncr,6),'')
                 endif
              else
                 if gcPath_m='i:\pl\'
-                   ?'Код опеpацiї - '+str(kopr,3)+' '+nopr
+                   ?'Код опеpацiї - '+str(kopr,3)+' '+allt(NOpr)
                 else
                    if !(kopr=177.and.(vzz=1.or.vzz=3))
-                      ?'Код опеpацiї - '+str(kopr,3)+' '+nopr+' ';
+                      ?'Код опеpацiї - '+str(kopr,3)+' '+allt(NOpr)+' ';
                       +iif(ttnpr#0,' '+str(ttnpr,6),'')+iif(ttncr#0,' '+str(ttncr,6),'')
                    else
                       ?'Код опеpацiї - '+str(kopr,3)

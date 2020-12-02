@@ -1695,7 +1695,8 @@ FUNCTION  bank361email()
   LOCAL cFlMess, dDt
   LOCAL cListEMail:=;
   "zvada.aleksandr11@gmail.com, alex-mas82@ukr.net,"+;
-  "elenavitmark@ukr.net, sumyprodresurs@gmail.com,lista@bk.ru"
+  "sumyprodresurs@gmail.com,lista@bk.ru"
+  //elenavitmark@ukr.net, 12-02-20 03:00pm
   if gnEnt=21
     cListEMail:='vadim_5@rambler.ru,lista@bk.ru,vadimkaluzhnij@gmail.com'
   endif

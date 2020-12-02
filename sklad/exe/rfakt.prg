@@ -261,7 +261,7 @@ netuse('dclr')
 netuse('tcen')
 //netuse('tovpt')
 
-rspod()
+RsPod()
 
 unlock all
 CLEA
@@ -269,7 +269,7 @@ nuse()
 return
 
 /******************** */
-function rspod(p1)
+function RsPod(p1)
   /* p1=1 из документа
    *******************
    */
@@ -964,10 +964,17 @@ function rspod(p1)
     fSumr='svp'
     fprr='pr'
     mprr='prr'
-    tbl3oper()
+    Tbl3Oper()
     pere(2)
     sele rs3
+
+    // удаление пустых
+    If (netseek('t1', '0'))
+      DBEval({|| netdel()}, , {|| ttn=0})
+    EndIf
     if (netseek('t1', 'Ttnr'))
+
+      // удаление пустых
       while (ttn=Ttnr)
         if (ssf=0.and.bssf=0)
           netdel()

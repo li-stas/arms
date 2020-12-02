@@ -1545,7 +1545,7 @@ Do While .T.
       prF1r=0
       do while .t.  // Денежная часть документа
           if rs1->prz=0
-             tbl3oper()
+             Tbl3Oper()
           endif
           pere(2)  // Полный перерасчет
           if esc_r=1
@@ -1564,9 +1564,9 @@ Do While .T.
                 foot('F9','Итоги')
             case gnArm=3 .and. (Who<>1.or.gnAdm=1).and.rs1->prz=0.and.tarar=1
               if pStr=0
-                foot('INS,DEL,F4,F5,F6,F8,F9','Доб.,Уд,Корр.,Ст.возвр.,Подтв,Провести,Итоги')
+                foot('INS,DEL,F4,F5,F6,F8,F9','Доб.,Уд,Корр.,Ст.возвр.,Подтв,Пров&ФинК,Итоги')
               else
-                foot('INS,DEL,F4,F5,F6,F8,F9','Доб.,Уд,Корр.,Ст.невоз.,Подтв,Провести,Итоги')
+                foot('INS,DEL,F4,F5,F6,F8,F9','Доб.,Уд,Корр.,Ст.невоз.,Подтв,Пров&ФинК,Итоги')
               endif
             othe
               foot('INS,DEL,F4,F9','Добавить,Удалить,Коррекция,Итоги')
@@ -1630,7 +1630,7 @@ Do While .T.
                   sele kln
                   if netseek('t1','kplr')
                      if kln->nn#0 //.and.!empty(kln->nsv)
-                        rspod(1)
+                        RsPod(1)
                      else
                         wmess('Не плательщик НДС',2)
                      endif
@@ -1649,14 +1649,19 @@ Do While .T.
                endif
              case lastkey()=K_F9 // Итоги
                   exit
-             case lastkey()=K_INS.and.prdp().and.(who=2.or.who=3.or.who=4).and.rs1->prz=0 .AND.;
-               IIF(!EMPTY(Dopr),;//отгружен
+             case lastkey()=K_INS.and.prdp(); // Добавить
+              .and.(who=2.or.who=3.or.who=4);
+              .and.rs1->prz=0;
+              .and. IIF(!EMPTY(Dopr),;//отгружен
                    gnCenR=1 .OR. gnAdm=1,;//редактирование розничной цены
                   .T.;
                     )
-                  // // Добавить
-                  tbl3oper()
-             case lastkey()=K_F4.and.prdp().and.(who=2.or.who=3.or.who=4).and.rs1->prz=0.and. ;
+
+                  Tbl3Oper()
+
+             case lastkey()=K_F4.and.prdp();
+              .and.(who=2.or.who=3.or.who=4);
+              .and.rs1->prz=0.and. ;
                IIF(!EMPTY(Dopr),;//отгружен
                    gnCenR=1 .OR. gnAdm=1,;//редактирование розничной цены
                   .T.;

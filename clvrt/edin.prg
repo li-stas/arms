@@ -61,14 +61,20 @@ FUNCTION EdinOrders(cDosParam, cPath_Order)
 
     edinAttr := allt(oOrder["BUYER"])
     kplr := gln2kkl(edinAttr)
+    If kplr = 0
+      outlog(3,__FILE__,__LINE__,'  ','"kplr":0 ','"BUYER:"',edinAttr)
+    EndIf
 
     edinAttr := allt(oOrder["DELIVERYPLACE"])
     kgpr := gln2kkl(edinAttr)
+    If kgpr = 0
+      outlog(3,__FILE__,__LINE__,'  ','"kgpr":0 ','"DELIVERYPLACE:"',edinAttr)
+    EndIf
 
     If kplr = 0 .or. kgpr = 0
-      outlog(3,__FILE__,__LINE__,'  ',kgpr,kplr)
       loop
     EndIf
+
 
     Sklr   := 888
     IF .NOT. (UPPER("/all_skl") $ UPPER(cDosParam))

@@ -312,7 +312,7 @@ else
    t_ndsr=getfield('t1','ttnr,11','rs3','ssf')
    t_40r=getfield('t1','ttnr,40','rs3','ssf')
    t_46r=getfield('t1','ttnr,46','rs3','ssf')
-*   t_48r=getfield('t1','ttnr,48','rs3','ssf')
+   //t_48r=getfield('t1','ttnr,48','rs3','ssf')
    t_61r=getfield('t1','ttnr,61','rs3','ssf')
    Dok2_Addr=iif(t_40r#0,'Скидка '+str(t_40r,10,2),'')+' '+iif(t_46r#0,'Оформл '+str(t_46r,10,2),'')
    Dok3_Addr=iif(t_61r#0,'Автоусл. '+str(t_61r,10,2),'') //+' '+iif(t_48r#0,'Оформл БСО '+str(t_48r,10,2),'')

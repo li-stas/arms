@@ -1046,7 +1046,7 @@ static function ProvIns(p1)
   wprvins=wopen(10, 20, 16, 60)
   wbox(1)
   sel=select()
-  if (p1=nil)
+  if (p1=nil) // новая
     store 0 to ksz_r, db_r, kr_r, lev_r
     store space(6) to mask_r
     store space(20) to nz_r
@@ -1083,7 +1083,7 @@ static function ProvIns(p1)
 
     if (vnr=1)
       sele prov
-      if (p1=nil)
+      if (p1=nil) // новая
         set order to
         go bott
         if (ksz_r=90)

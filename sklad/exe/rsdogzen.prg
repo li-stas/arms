@@ -32,6 +32,10 @@ if (przr=0)
       return
     endif
 
+    Textr=DeleKorFromText(getfield('t1', 'ttnr', 'rs1', 'text'))
+    rs1->(netseek('t1','ttnr'))
+    rs1->(netrepl('Text','Textr'))
+
     if (aPcenr=1.or.aPcenr=2.or.aPcenr=5.or.aPcenr=6)
       prDecr=2
     else
@@ -269,6 +273,12 @@ while (.t.)
     EndIf
 
     if CalcPercent(nSumUts, @nMaxSumUts, sdvotp_r, nS_SdvOpt) # 0
+
+      rs1->(netseek('t1','ttnr'))
+      Textr := allt(getfield('t1', 'ttnr', 'rs1', 'text'));
+       +" " + '"Коригування":' + "-" + allt(str(nSumUts + nMaxSumUts,8,2))
+      rs1->(netrepl('Text','Textr'))
+
       wmess('Цель не остигнyта. Разница = '+str(nMaxSumUts,5,2), 0)
     endif
     exit
@@ -2414,8 +2424,8 @@ STATIC FUNCTION CalcPercent(nSumUts, nMaxSumUts, sdvotp_r, nCur_SdvOpt)
   Do While ii > 0
     ii--
 
-    outlog(__FILE__,__LINE__, str(nDelta,8,2), str(nCurSumUts,8,2), str(sdvotp_r,8,2), str(nS_SdvOpt,8,2) )
-    outlog(__FILE__,__LINE__, str(nCurPr,8,2), str(nMinPr,8,2), str(nMaxPr,8,2))
+    //outlog(__FILE__,__LINE__, str(nDelta,8,2), str(nCurSumUts,8,2), str(sdvotp_r,8,2), str(nS_SdvOpt,8,2) )
+    //outlog(__FILE__,__LINE__, str(nCurPr,8,2), str(nMinPr,8,2), str(nMaxPr,8,2))
 
     Repl_ZenRs2(5, nCurPr) // заливает 10%
     Pere(2)
@@ -2446,3 +2456,41 @@ STATIC FUNCTION CalcPercent(nSumUts, nMaxSumUts, sdvotp_r, nCur_SdvOpt)
   nMaxSumUts := nDelta
 
   RETURN (nDelta)
+
+
+/*****************************************************************
+ 
+ FUNCTION:
+ АВТОР..ДАТА..........С. Литовка  12-02-20 * 11:40:24am
+ НАЗНАЧЕНИЕ.........
+ ПАРАМЕТРЫ..........
+ ВОЗВР. ЗНАЧЕНИЕ....
+ ПРИМЕЧАНИЯ.........
+ */
+STATIC FUNCTION  DeleKorFromText(cL)
+    LOCAL cKey := '"Коригування":'
+    Local nLPos := AT(cKey, cL)
+    Local nDPPos := nLPos + len(cKey)
+    Local nPos := nDPPos, i
+
+
+    If nLPos = 0
+
+    Else
+      nPos++
+      For i:=nPos To len(cL)
+        If !(SUBSTR(cL,i,1) $ '1234567890.-eE')
+          exit
+        EndIf
+      Next i
+
+      //outlog(__FILE__,__LINE__,cL)
+      //outlog(__FILE__,__LINE__,i,nLPos,i - nLPos)
+
+      cL:=Stuff(cL, nLPos, (i - nLPos)+1, "")
+      //outlog(__FILE__,__LINE__,cL)
+
+    EndIf
+
+
+  RETURN cL
