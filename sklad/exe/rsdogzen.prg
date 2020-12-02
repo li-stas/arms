@@ -32,9 +32,9 @@ if (przr=0)
       return
     endif
 
-    Textr=DeleKorFromText(getfield('t1', 'ttnr', 'rs1', 'text'))
+    Text1r=DeleKorFromText(getfield('t1', 'ttnr', 'rs1', 'text'))
     rs1->(netseek('t1','ttnr'))
-    rs1->(netrepl('Text','Textr'))
+    rs1->(netrepl('Text','Text1r'))
 
     if (aPcenr=1.or.aPcenr=2.or.aPcenr=5.or.aPcenr=6)
       prDecr=2
@@ -273,14 +273,15 @@ while (.t.)
     EndIf
 
     if CalcPercent(nSumUts, @nMaxSumUts, sdvotp_r, nS_SdvOpt) # 0
-
-      rs1->(netseek('t1','ttnr'))
-      Textr := allt(getfield('t1', 'ttnr', 'rs1', 'text'));
-       +" " + '"Коригування":' + "-" + allt(str(nSumUts + nMaxSumUts,8,2))
-      rs1->(netrepl('Text','Textr'))
-
       wmess('Цель не остигнyта. Разница = '+str(nMaxSumUts,5,2), 0)
     endif
+
+    rs1->(netseek('t1','ttnr'))
+    Text1r := allt(getfield('t1', 'ttnr', 'rs1', 'text'));
+      +" " + '"Коригування":' + "-" + allt(str(nSumUts + nMaxSumUts,8,2))
+    rs1->(netrepl('Text','Text1r'))
+    Textr := getfield('t1', 'ttnr', 'rs1', 'text') // обновить глоб переменную
+
     exit
 
   elseIf aPcenr=5
@@ -2467,7 +2468,7 @@ STATIC FUNCTION CalcPercent(nSumUts, nMaxSumUts, sdvotp_r, nCur_SdvOpt)
  ВОЗВР. ЗНАЧЕНИЕ....
  ПРИМЕЧАНИЯ.........
  */
-STATIC FUNCTION  DeleKorFromText(cL)
+STATIC FUNCTION DeleKorFromText(cL)
     LOCAL cKey := '"Коригування":'
     Local nLPos := AT(cKey, cL)
     Local nDPPos := nLPos + len(cKey)
